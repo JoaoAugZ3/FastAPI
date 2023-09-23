@@ -1,0 +1,176 @@
+{Objeto Ambiente}
+{  
+    id_amb: int | None = None
+    nome: str
+    desc: str
+    icone: str
+    dispositivos: list[Dispositivo]
+}
+
+{Objeto Dispositivo}
+{  
+    desc: str
+    icone: str
+    status_conexao: bool
+    status_lig_desl: bool
+}
+link: https://materialui.co/colors
+____________________________________________________________________________________________________
+METHOD--------PATH--------PARM--------BODY--------STATUS--------BODY--------DESCRIPTION
+
+GET         /ambientes     -           -          200       [ambientes]     Obtem uma lista de todos 
+                                                                           os ambientes da residência
+____________________________________________________________________________________________________
+
+GET        /ambientes/   id_amb:int    -          200         ambiente      Obtem um ambiente       
+            {id_amb}             
+____________________________________________________________________________________________________
+
+POST       /ambientes      -        Ambiente      200         Ambiente       Cria um ambiente
+____________________________________________________________________________________________________
+
+PUT       /ambientes       -        Ambiente      200         Ambiente       Atualiza um ambiente
+____________________________________________________________________________________________________
+
+DELETE   /ambientes        -        Ambiente      200         Ambiente       Remove um ambiente
+____________________________________________________________________________________________________
+
+GET  /ambientes/{id_amb}/ id_amb:int    -         200       [dispositivos]   Obtem um lista de todos
+        dispositivos                                                        os dispositivos de um ambiente
+____________________________________________________________________________________________________
+                              
+POST /ambientes/{id_amb}/ id_amb:int  dispositivo 200       dispositivo      Cria um dispositivo
+        dispositivos
+____________________________________________________________________________________________________
+                              
+PUT /ambientes/{id_amb}/  id_amb:int  dispositivo 200       dispositivo      Atualiza um dispositivo
+        dispositivos
+____________________________________________________________________________________________________
+
+DELETE /ambientes/        id_amb:int  dispositivo 200       dispositivo      Remove um dispositivo
+   {id_amb}/dispositivos        
+
+_____________________________________________________________________________________________________
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Dispositivo(BaseModel):
+    id_dispo = int | None = None
+    desc: str
+    icone: str
+    status_conexao: bool
+    status_lig_desl: bool
+
+class Ambiente(BaseModel):
+    id_amb: int | None = None
+    nome: str
+    desc: str
+    icone: str
+    dispositivos: list[Dispositivo] = []
+
+residencia = []
+next_id = 1
+"""
+amb1 = Ambiente(1, 'SALA', '...', 'TV')
+amb2 = Ambiente(2, 'COZINHA', '...', 'Fogão')
+
+disp1 = Dispositivo('Galaxt J7', 'Samsung', False, False ) 
+disp2 = Dispositivo('Moto G7+', 'M', False, False)
+
+amb1.dispositivos.append(disp1)
+amb1.dispositivos.append(disp2)
+amb2.dispositivos.append(disp2)"""
+
+def buscar_ambiente(id_amb: int):
+    for ambiente in residencia   :
+        if ambiente.id_amb == id_amb:
+            return ambiente
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente inexistente.')
+
+def buscar_dispositivo(origem:Ambiente, id_dispo:int):
+    for dispo in origem.dispositivos:
+        if dispo.id == id_dispo:
+            return dispo
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Dispositivo inexistente.')
+
+def mover_dispositivo(origem:Ambiente, destino:Ambiente, dispositivo:Dispositivo):
+    origem.dispositivos.remove(dispositivo)
+    destino.dispositivo.appende(dispositivo)
+    return destino.dispositivos
+
+@app.get('/ambientes')
+def mostrar_ambientes():
+    return residencia
+
+@app.get('/ambientes/{id_amb}')
+def buscar_um_ambiente(id_amb:int):
+    ambiente = buscar_ambiente(id_amb)
+    if ambiente == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente inexistente.')
+    return ambiente
+
+@app.post('/ambientes')
+def post_ambiente(ambiente: Ambiente):
+    global next_id
+    ambiente.id_amb = next_id
+    next_id += 1
+    residencia.append(ambiente)
+    return ambiente
+
+@app.put('/ambientes')
+def put_ambiente(ambiente: Ambiente):
+    residencia.remove(ambiente)
+    residencia.append(ambiente)
+    return residencia
+
+@app.delete('/ambientes/{id_amb}')
+def delete_ambiente(id_amb:int):    
+    ambiente = buscar_ambiente(id_amb)
+    if not ambiente:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente inexistente.')
+    if len(ambiente.dispositivos) == 0:
+        residencia.remove(ambiente)
+        
+
+@app.get('/ambientes/{id_amb}/dispositivos')
+def mostrar_dispositivos(id_amb:int):
+    ambiente = buscar_ambiente(id_amb)
+    if not ambiente:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente inexistente.')
+    return ambiente.dispositivos
+
+@app.get('/ambientes/{id_amb}/dispositivos/{id_dispo}')
+def mostrar_um_dispositivo(id_amb:int):
+    ambiente = buscar_ambiente(id_amb)
+    if not ambiente:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente inexistente.')
+    return ambiente.dispositivos
+
+@app.post('/ambientes/{id_amb}/dispositivos')
+def criar_dispostivos(id_amb:int, dispositivo:Dispositivo):
+    ambiente = buscar_ambiente(id_amb)
+    ambiente.dispositivos.append(dispositivo)
+    return ambiente.dispositivos
+
+@app.put('/ambientes/{id_amb}/dispositivos/{id_dispo}')
+def mover_um_dispositivo(id_origem:int, id_destino:int,  id_dispositivo:id):
+    origem = buscar_ambiente(id_origem)
+    destino = buscar_ambiente(id_destino)
+    dispositivo = buscar_dispositivo(origem, id_dispositivo)
+
+    mover_dispositivo(origem, destino, dispositivo)
+
+"""@app.put('/ambientes/{id_amb}/dispositivos')
+def atualizar_dispositivos(id_amb:int, dispositivo:Dispositivo):
+    pass
+"""
+"""@app.delete('/ambientes/{id_amb}/dispositivos')
+def delete_dispositivos(id_amb:int, dispositivo:Dispositivo):
+    pass"""
