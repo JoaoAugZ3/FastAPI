@@ -13,5 +13,3 @@ app = FastAPI()
 #implementar banco de dados assim que possível
 residencia = []
 next_id = 1
-
-#Deu Certo?
