@@ -1,8 +1,7 @@
 from fastapi import FastAPI, response
 from sqlmodel import SQLModel
 app = FastAPI()
-class maopdsjfakljs(SQLModel):
-    bunda: str
+
 
 @app.post("/simulacao-compra")
 def simular_compra(quantidade:int, desconto:int, bonus:int):

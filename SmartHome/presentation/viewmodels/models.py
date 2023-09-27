@@ -1,21 +1,35 @@
-from pydantic import BaseModel
+#FEITO
+
+from ulid import ulid
 from sqlmodel import SQLModel, Field, Relationship
 
+class EnvironmenteBase(SQLModel):
+    description: str
+    icon: str | None = Field(default='icon.png')
+    
+    
+class Environment(EnvironmenteBase, table=True):
+    id: str = Field(default=ulid(), primary_key=True)
+    
+    dispositivos: list['Device'] = Relationship(back_populates='environment')
+    
+class EnvironmentRead(EnvironmenteBase):
+    id: str
+    
+class DeviceBase(SQLModel):
+    description: str
+    icon: str | None = Field(default='icon.png')
+    status_conn: bool | None = Field(default=True)
+    status: bool | None = Field(default=False)
+    
+    environmet_id: str | None = Field(default=None, foreign_key='environment.id')
+    
+class DeviceWithEnvironment(DeviceBase):
+    id: int
+    environmet: EnvironmentRead | None = None   
 
-class Dispositivo(SQLModel, table=True):
-    id_dispo: int = Field(primary_key=True, index=True)
-    desc: str
-    icone: str
-    status_conexao: bool
-    status_lig_desl: bool
-    ambiente_id: int = Field(foreign_key="ambiente.id_amb")
-
-class Ambiente(SQLModel, table=True):
-    id_amb: int = Field(primary_key=True, index=True)
-    nome: str
-    desc: str
-    icone: str
-
-
-    # Defina a relação com os dispositivos
-    dispositivos: list[Dispositivo] = Relationship(back_populates="ambiente")
+class Device(DeviceBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    
+    environment: Environment | None = Relationship( back_populates='device')
+    
