@@ -1,5 +1,5 @@
-#FEITO
 from sqlmodel import create_engine, SQLModel
+#PUXA OS DADOS DO .ENV
 from decouple import config
 
 def get_engine():
@@ -10,5 +10,11 @@ def get_engine():
     PASSWORD = config('DB_PASSWORD')
     
     db_url = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
-def create_tables():
-    SQLModel.metadata.create_all(get_engine)
+
+    engine = create_engine(db_url, echo=True)
+    
+    return engine
+
+def create_all_tables():
+    engine = create_engine()
+    SQLModel.metadata.create_all(engine)

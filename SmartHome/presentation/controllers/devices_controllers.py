@@ -1,16 +1,17 @@
 from fastapi import APIRouter, status, HTTPException
 from presentation.viewmodels.models import  *
-from application.services.ambientes_service import *
+from smarthome.application.services.environments_service import *
 #from sqlmodel import Session, delete, select
 
 router = APIRouter()
-
-endine = obter_engine()
-ambiente_service = AmbienteService()
+prefix = '/environments/{id}/devices'
+ 
+engine = get_engine()
+environment_service = EnvironmentService()
 
 #MUDAR AS FUNÇÕES PARA UM ARQUIVO SEPARADO DEPOIS   
 '''def buscar_dispositivo(origem:Ambiente, id_dispo:int):
-    for dispo in origem.dispositivos:
+    for dispo in origem.dispositivos:print(ambientes.nome)
         if dispo.id == id_dispo:
             return dispo
         else:
