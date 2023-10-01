@@ -68,5 +68,3 @@ def delete_dispositivos(id_amb:int, id_dispo:int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Ambiente ou dispositivo inexistente.')    
     
     ambiente.dispositivos.remove(dispositivo)    
-    
-
