@@ -7,6 +7,7 @@ from presentation.controllers.dispositivos_controllers import\
     router as dispositivos_router
 
 app = FastAPI()
+create_tables() 
 #app.include_router(ambientes_router, prefix=ambiente_prefix)
 #app.include_router(dispositivos_router, prefix='/dispositivos')
 

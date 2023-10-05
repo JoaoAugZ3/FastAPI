@@ -10,5 +10,8 @@ def get_engine():
     PASSWORD = config('DB_PASSWORD')
     
     db_url = f'postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+    engine = create_engine(db_url, echo=True)
+    return engine
+
 def create_tables():
-    SQLModel.metadata.create_all(get_engine)
+    SQLModel.metadata.create_all(get_engine())
