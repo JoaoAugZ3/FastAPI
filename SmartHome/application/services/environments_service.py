@@ -3,13 +3,14 @@
 # EXECUTA AS AÇÕES DA API
 from fastapi import HTTPException, status
 from sqlmodel import Session, delete, select
-from ...persistence.utils import get_engine
-from ...presentation.viewmodels.models import *
+from persistence.utils import get_engine
+from presentation.viewmodels.models import *
 
 
-class EnvironmentService():
+class EnvironmentService:
     def __init__(self) -> None:
         self.session = Session(get_engine())
+
 
     def get_all_environment(self):
         sttm = select(Environment)
@@ -18,6 +19,7 @@ class EnvironmentService():
         
         return environments
     
+
     def get_environment_for_id(self, id:int):
         sttm = select(Environment).where(Environment.id == id)
         environment = self.session.exec(sttm).first()
@@ -25,11 +27,13 @@ class EnvironmentService():
         
         return environment
     
+
     def create_environment(self, environment:Environment):
         self.session.add(Environment)
         self.session.commit()
         self.session.refresh(environment)
         
+
     def update_environment(self, id:str, environment:Environment):
         current_environment = self.get_environment_for_id(id)
         
@@ -41,6 +45,7 @@ class EnvironmentService():
         self.session.add(current_environment)
         self.session.commit()
         self.session.close()
+        
         
     def delete_environment(self, id:str):
         environment = self.get_environment_for_id(id)

@@ -1,15 +1,16 @@
-from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel
+from fastapi import FastAPI
 from presentation.viewmodels.models import *
-from presentation.controllers.ambiente_controllers import \
-    router as ambientes_router, prefix as ambientes_prefix
-from presentation.controllers.dispositivos_controllers import\
-    router as dispositivos_router
+from persistence.utils import get_engine
+
+
+from presentation.controllers.environments_controllers import \
+    router as environments_router, prefix as environment_prefix
+# from presentation.controllers.devices_controllers import\
+#     router as devices_router, prefix as device_prefix
 
 app = FastAPI()
-#app.include_router(ambientes_router, prefix=ambiente_prefix)
-#app.include_router(dispositivos_router, prefix='/dispositivos')
+engine = get_engine()
+SQLModel.metadata.create_all(engine)
 
-#implementar banco de dados assim que possível
-residencia = []
-next_id = 1
+app.include_router(environments_router, prefix=environment_prefix)
+# app.include_router(devices_router, prefix=device_prefix)

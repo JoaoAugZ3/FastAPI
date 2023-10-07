@@ -10,7 +10,6 @@ class EnvironmenteBase(SQLModel):
     
 class Environment(EnvironmenteBase, table=True):
     id: str = Field(default=ulid(), primary_key=True)
-    
     devices: list['Device'] = Relationship(back_populates='environment')
     
 class EnvironmentRead(EnvironmenteBase):

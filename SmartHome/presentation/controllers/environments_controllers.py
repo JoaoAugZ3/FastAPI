@@ -1,11 +1,10 @@
 # CONTROLE DAS ROTAS DE environmentS
 from fastapi import status, HTTPException, APIRouter
-
+from application.services.environments_service import EnvironmentService
 from presentation.viewmodels.models import *
-from ...persistence.utils import get_engine
-from ...application.services.environments_service import EnvironmentService
+#from ...persistence.utils import get_engine
 
-engine = get_engine()
+#engine = get_engine()
 router = APIRouter()
 prefix = '/environments'
 
@@ -14,10 +13,10 @@ environment_service = EnvironmentService()
 
 @router.get('/', status_code=status.HTTP_200_OK)
 async def show_environments():
-    return environment_service.get_all_environment
+    return environment_service.get_all_environment()
 
 @router.get('/{id}', status_code=status.HTTP_200_OK)
-def search_an_environment(id:str):
+async def search_an_environment(id:str):
     environment = environment_service.get_environment_for_id(id)
 
     if not environment:
