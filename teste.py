@@ -13,7 +13,6 @@ class Hero(SQLModel, table=True):
 
 sqlite_file_name = "database.db"
 #db_url = f"sqlite:///{sqlite_file_name}"
-db_url = 'postgresql://postgres:JoaoAugustoELinfo@db.uukrdqjukgqmuqtsxjxy.supabase.co:5432/postgres'
 engine = create_engine(db_url, echo=True)
 
 SQLModel.metadata.create_all(engine)
