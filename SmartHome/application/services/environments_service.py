@@ -29,10 +29,10 @@ class EnvironmentService:
     
 
     def create_environment(self, environment:Environment):
-        self.session.add(Environment)
+        self.session.add(environment)
         self.session.commit()
         self.session.refresh(environment)
-        
+        return environment    
 
     def update_environment(self, id:str, environment:Environment):
         current_environment = self.get_environment_for_id(id)
@@ -53,9 +53,13 @@ class EnvironmentService:
         if not environment:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Environment not found')
         
-        environment_devices = select(Environment).where(Environment.id == id and Environment.devices > 0)
-
+        device_count = self.session.query(Device).filter(Device.environment_id == id).count()
+        if device_count > 0:
+                    raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Cannot delete environment with associated devices')
+                
         sttm = delete(Environment).where(Environment.id == id)
+
         self.session.exec(sttm)
         self.session.commit()
+
         self.session.close()

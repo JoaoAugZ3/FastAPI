@@ -21,14 +21,14 @@ class DeviceBase(SQLModel):
     status_conn: bool | None = Field(default=True)
     status: bool | None = Field(default=False)
     
-    environmet_id: str | None = Field(default=None, foreign_key='environment.id')
+    environment_id: str | None = Field(default=None, foreign_key='environment.id')
     
 class DeviceWithEnvironment(DeviceBase):
     id: int
-    environmet: EnvironmentRead | None = None   
+    environment: EnvironmentRead | None = None   
 
 class Device(DeviceBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     
-    environment: Environment | None = Relationship( back_populates='device')
+    environment: Environment | None = Relationship( back_populates='devices')
     
